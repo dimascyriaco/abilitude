@@ -74,11 +74,15 @@ module Abilitude
 
     def add_modifiers(new_modifiers)
       self.modifiers ||= Hash.new([])
-      new_modifiers = Array[new_modifiers]
+      new_modifiers = Array(new_modifiers)
 
       new_modifiers.each do |mod|
-        self.modifiers[mod.target.to_sym] += new_modifiers
+        self.modifiers[mod.target.to_sym] += [mod]
       end
+    end
+
+    def add_modifier(new_modifier)
+      add_modifiers(new_modifier)
     end
 
     def add_abilities(ability_name, &block)
@@ -88,6 +92,8 @@ module Abilitude
     def method_missing(name, args = nil)
       if self.class.has_attribute?(name)
         calculate_attribute(name)
+      else
+        super(name, args)
       end
     end
 
