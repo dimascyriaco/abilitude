@@ -1,9 +1,9 @@
 module Abilitude
   module Character
     module ClassMethods
-      attr_reader :attributes
+      attr_reader :abilities
 
-      # Add a dynamic attribute to the Class
+      # Add a abilities to the Class
       #
       # The block passed will we evaluated in the context
       # of an instance of the Class
@@ -18,12 +18,12 @@ module Abilitude
       #     @strength = strength
       #   end
       #
-      #   attribute :lift do
+      #   ability :lift do
       #     strength * 10
       #   end
       # end
       #
-      # Character.attribute :push_ups do
+      # Character.ability :push_ups do
       #   strength * 2
       # end
       #
@@ -36,18 +36,10 @@ module Abilitude
       # @param [Symbol] aliaz
       # @param [Calculator, #strategy, #calculate] calculator
       # @param [Proc] block
-      def attribute(name, aliaz = nil, &block)
-        @attributes ||= {}
-        @attributes[name] = block
-        @attributes[aliaz] = block if aliaz
-      end
-
-      # @param [Symbol, String] name
-      # @return [Boolean]
-      def has_attribute?(name)
-        return false unless attributes
-
-        attributes.keys.include? name.to_sym
+      def ability(name, aliaz = nil, &block)
+        @abilities ||= {}
+        @abilities[name] = block
+        @abilities[aliaz] = block if aliaz
       end
     end
 
@@ -66,6 +58,8 @@ module Abilitude
     end
 
     def change(attribute, amount)
+      return false unless self.respond_to?(attribute)
+
       current = send(attribute)
       return unless current
 
@@ -85,28 +79,41 @@ module Abilitude
       add_modifiers(new_modifier)
     end
 
-    def add_abilities(ability_name, &block)
-      self.class.attribute ability_name, &block
+    def add_ability(ability, &block)
+      self.class.ability ability, &block
     end
 
-    def method_missing(name, args = nil)
-      if self.class.has_attribute?(name)
-        calculate_attribute(name)
-      else
-        super(name, args)
-      end
+    def respond_to?(name)
+      return true if has_ability?(name)
+      super(name)
     end
 
-    def calculate_attribute(name)
+    private
+
+    def has_ability?(name)
+      return false unless self.class.abilities
+
+      self.class.abilities.keys.include? name.to_sym
+    end
+
+    def calculate_ability(name)
       self.modifiers ||= Hash.new([])
 
-      value = self.instance_eval(&self.class.attributes[name])
+      value = self.instance_eval(&self.class.abilities[name])
 
       self.modifiers[name.to_sym].each do |mod|
         value = mod.apply(value)
       end
 
       value
+    end
+
+    def method_missing(name, *args, &block)
+      if has_ability?(name)
+        calculate_ability(name)
+      else
+        super(name, *args, &block)
+      end
     end
   end
 end

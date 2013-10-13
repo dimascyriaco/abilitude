@@ -12,9 +12,9 @@ end
 describe Abilitude::Character do
   before { @character = Character.new }
 
-  describe ".attribute" do
-    it 'Allows the addition of an attribute to the Character class' do
-      Character.attribute :push_ups do
+  describe ".ability" do
+    it 'Allows the addition of an ability to the Character class' do
+      Character.ability :push_ups do
         strength * 2
       end
 
@@ -35,7 +35,7 @@ describe Abilitude::Character do
 
   describe "#add_modifier" do
     it 'Allows modifiers to be added to the Character instance' do
-      modifier = Struct.new('Modifier', :target).new('bla')
+      modifier = OpenStruct.new(target: 'bla')
       @character.add_modifiers(modifier)
       @character.modifiers.must_equal(bla: [modifier])
     end

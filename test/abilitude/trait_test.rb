@@ -27,7 +27,7 @@ class Trait
     character.change(:strength, -2)
 
     character.add_ability(:vision) do
-      inteligence * 10
+      intelligence * 10
     end
 
     character.add_modifiers(Modifier.new(:vision))
@@ -36,14 +36,13 @@ end
 
 describe Abilitude do
   describe "#apply_to" do
-    it 'changes an attributes' do
+    it 'changes an attribute' do
       character = Character.new
       character.add_trait(Trait.new)
       character.strength.must_equal 8
     end
 
     it 'add an ability' do
-      skip 'Falta implementar.'
       character = Character.new
       character.add_trait(Trait.new)
       character.vision.must_equal 200
@@ -52,7 +51,7 @@ describe Abilitude do
 
   describe "Modifier" do
     it 'modifies' do
-      Character.attribute :push_ups do
+      Character.ability :push_ups do
         strength
       end
 
