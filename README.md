@@ -1,29 +1,78 @@
-# Abilitude
+Abilitude
+=========
 
-TODO: Write a gem description
+Abilitude ia a library/DSL that enables you to create flexible Character classes that can be expanded with custom behavior.
 
-## Installation
+A basic character class could be like:
 
-Add this line to your application's Gemfile:
+    class Character
+      include Abilitude::Character
 
-    gem 'abilitude'
+      attr_accessor :strength
 
-And then execute:
+      def initialize(strength)
+        @strength = strength
+      end
+    end
 
-    $ bundle
 
-Or install it yourself as:
+Abilities
+---------
 
-    $ gem install abilitude
+With that you can add abilities to the Character class:
 
-## Usage
+    Character.attribute :range do
+      strength * 2
+    end
 
-TODO: Write usage instructions here
+Any character instances now have an 'range' method:
 
-## Contributing
+    char = Character.new(10)
+    char.range # => 20
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+
+Traits
+------
+
+A Trait is a way to add behaviour to a character.
+
+A trait class has to implement a #apply_to method that will receive the character. Here is a basic trait:
+
+    class WeaknessTrait
+      def apply_to(character)
+        character.change :strength, -2
+      end
+    end
+
+    char.add_trait(WeaknessTrait.new)
+    char.strength # => 8
+
+
+Modifiers
+---------
+
+A Trait can also add an modifier to the character. This modifier will change the value of a given ability.
+
+A Modifier class have to implement #target and #apply.
+
+    # This is a Modifier
+    class ThrowBoost
+      def target
+        'range'
+      end
+
+      def apply(value)
+        value * 10
+      end
+    end
+
+    # This is a Trait
+    class OlympicThrowerTrait
+      def apply_to(character)
+        character.add_modifier(ThrowBoost.new)
+      end
+    end
+
+    char = Character.new(10)
+    char.add_trait(OlympicThrowerTrait.new)
+    char.range # => 200
