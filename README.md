@@ -3,7 +3,7 @@ Abilitude
 
 Abilitude ia a library/DSL that enables you to create flexible Character classes that can be expanded with custom behavior.
 
-The basic concept is Abilitude is that an Character has a set of basic attributes (normal Ruby instance variables) and zero or more
+The basic concept in Abilitude is that an Character has a set of basic attributes (normal Ruby instance variables) and zero or more
 'abilities'. An ability is nothing more than a secondary attribute, calculated on top of a basic attribute. The value of an ability can
 be modified by Modifiers. The least concept is of the Trait, which is a 'package' of Abilities and Modifiers that can be
 added to a Character all at once. A Trait can be used to create an 'Advantage' system or a 'Class' system. Let's see some examples.
@@ -56,7 +56,7 @@ Using Traits to modify Characters
 
 There is three ways in which a Trait can modify a Character. It can **#change** a basic attribute, **#add_ability** or **#add_modifier**.
 A Trait can be any class that implements **#apply_to**. Apply_to will receive the character, on which the trait could
- call #change, #add_ability or #add_modifier.
+ call the three methods above.
 
 Using a Trait to change a basic attribute
 ----------------------------------------
